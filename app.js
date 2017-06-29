@@ -44,21 +44,42 @@ var bot = new builder.UniversalBot(connector);
 bot.dialog('/', function (session) {
     //console.log(session.message.text);
     var msg = session.message.text;
+    var finalResp = "";
     switch (msg) {
         case "/price btc":
             request({
                 method: 'GET',
-                url: apiUrl + "BTCSGD"
+                url: apiUrl + "BTCUSD"
             })
                 .then(function (resp) {
                 //session.send("Done!");
-                console.log("Response: " + resp);
-                console.log("Response, variable data: " + resp["data"]);
-                session.send("BTCSGD"
+                //console.log("Response: " + resp);
+                //console.log("Response, variable data: " + resp["data"]);
+                finalResp += "BTCUSD".bold()
                     + "  \n"
-                    + "Current Buy Price: SGD" + JSON.parse(resp)["data"]["buy_price"]
+                    + "Current Buy Price: US$" + JSON.parse(resp)["data"]["buy_price"]
                     + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
-                    + "Current Sell Price: SGD" + JSON.parse(resp)["data"]["sell_price"]);
+                    + "Current Sell Price: US$" + JSON.parse(resp)["data"]["sell_price"];
+                //console.log(finalResp);
+                // Second request
+                request({
+                    method: 'GET',
+                    url: apiUrl + "BTCSGD"
+                })
+                    .then(function (resp) {
+                    //session.send("Done!");
+                    console.log("Response: " + resp);
+                    console.log("Response, variable data: " + resp["data"]);
+                    finalResp += "BTCSGD".bold()
+                        + "  \n"
+                        + "Current Buy Price: SGD" + JSON.parse(resp)["data"]["buy_price"]
+                        + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
+                        + "Current Sell Price: SGD" + JSON.parse(resp)["data"]["sell_price"];
+                    console.log(finalResp);
+                })
+                    .catch(function (err) {
+                    console.log(err);
+                });
             })
                 .catch(function (err) {
                 console.log(err);
@@ -73,7 +94,7 @@ bot.dialog('/', function (session) {
                 //session.send("Done!");
                 console.log("Response: " + resp);
                 console.log("Response, variable data: " + resp["data"]);
-                session.send("ETHSGD"
+                session.send("ETHSGD".bold()
                     + "  \n"
                     + "Current Buy Price: SGD" + JSON.parse(resp)["data"]["buy_price"]
                     + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
@@ -84,7 +105,7 @@ bot.dialog('/', function (session) {
             });
             break;
         default:
-            // Ignore General Replies
+            // Ignore General Replies   
             //session.send("Sorry I don't get what you're saying!");
             break;
     }
