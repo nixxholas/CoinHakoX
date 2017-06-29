@@ -41,6 +41,12 @@ server.post('/api/messages', connector.listen());
 //     }
 // });
 var bot = new builder.UniversalBot(connector);
+// https://github.com/Microsoft/BotBuilder/issues/143
+bot.configure({
+    userWelcomeMessage: "Hello!.",
+    groupWelcomeMessage: "Hello Group!",
+    goodbyeMessage: "Goodbye =/"
+});
 bot.dialog('/', function (session) {
     //console.log(session.message.text);
     var msg = session.message.text;
@@ -54,8 +60,29 @@ bot.dialog('/', function (session) {
                 //session.send("Done!");
                 console.log("Response: " + resp);
                 console.log("Response, variable data: " + resp["data"]);
-                session.send("Current Buy Price: SGD" + JSON.parse(resp)["data"]["buy_price"]
+                session.send("BTCSGD"
                     + "  \n"
+                    + "Current Buy Price: SGD" + JSON.parse(resp)["data"]["buy_price"]
+                    + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
+                    + "Current Sell Price: SGD" + JSON.parse(resp)["data"]["sell_price"]);
+            })
+                .catch(function (err) {
+                console.log(err);
+            });
+            break;
+        case "/price eth":
+            request({
+                method: 'GET',
+                url: apiUrl + "ETHSGD"
+            })
+                .then(function (resp) {
+                //session.send("Done!");
+                console.log("Response: " + resp);
+                console.log("Response, variable data: " + resp["data"]);
+                session.send("ETHSGD"
+                    + "  \n"
+                    + "Current Buy Price: SGD" + JSON.parse(resp)["data"]["buy_price"]
+                    + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
                     + "Current Sell Price: SGD" + JSON.parse(resp)["data"]["sell_price"]);
             })
                 .catch(function (err) {
