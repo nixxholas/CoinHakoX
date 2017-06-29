@@ -66,12 +66,13 @@ bot.dialog('/', (session: any) => {
                     //console.log("Response: " + resp);
                     //console.log("Response, variable data: " + resp["data"]);
 
-                    finalResp += "BTCUSD".bold()
+                    finalResp += "*BTCUSD*".bold()
                     + "  \n"
                     + "Current Buy Price: US$" + JSON.parse(resp)["data"]["buy_price"]
                     + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
                     + "Current Sell Price: US$" + JSON.parse(resp)["data"]["sell_price"]
-                    + "  \n  \n";
+                    + "  \n" 
+                    + "  \n";
 
                     //console.log(finalResp);
 
@@ -85,7 +86,7 @@ bot.dialog('/', (session: any) => {
                             console.log("Response: " + resp);
                             console.log("Response, variable data: " + resp["data"]);
 
-                            finalResp += "BTCSGD".bold()
+                            finalResp += "*BTCSGD*".bold()
                             + "  \n"
                             + "Current Buy Price: SGD" + JSON.parse(resp)["data"]["buy_price"]
                             + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
