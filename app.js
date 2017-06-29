@@ -59,7 +59,8 @@ bot.dialog('/', function (session) {
                     + "  \n"
                     + "Current Buy Price: US$" + JSON.parse(resp)["data"]["buy_price"]
                     + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
-                    + "Current Sell Price: US$" + JSON.parse(resp)["data"]["sell_price"];
+                    + "Current Sell Price: US$" + JSON.parse(resp)["data"]["sell_price"]
+                    + "  \n  \n";
                 //console.log(finalResp);
                 // Second request
                 request({
@@ -75,7 +76,8 @@ bot.dialog('/', function (session) {
                         + "Current Buy Price: SGD" + JSON.parse(resp)["data"]["buy_price"]
                         + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
                         + "Current Sell Price: SGD" + JSON.parse(resp)["data"]["sell_price"];
-                    console.log(finalResp);
+                    //console.log(finalResp);
+                    session.send(finalResp);
                 })
                     .catch(function (err) {
                     console.log(err);
