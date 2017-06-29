@@ -41,12 +41,6 @@ server.post('/api/messages', connector.listen());
 //     }
 // });
 var bot = new builder.UniversalBot(connector);
-// https://github.com/Microsoft/BotBuilder/issues/143
-bot.configure({
-    userWelcomeMessage: "Hello!.",
-    groupWelcomeMessage: "Hello Group!",
-    goodbyeMessage: "Goodbye =/"
-});
 bot.dialog('/', function (session) {
     //console.log(session.message.text);
     var msg = session.message.text;
