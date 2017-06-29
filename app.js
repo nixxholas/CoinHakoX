@@ -54,7 +54,9 @@ bot.dialog('/', function (session) {
                 //session.send("Done!");
                 console.log("Response: " + resp);
                 console.log("Response, variable data: " + resp["data"]);
-                session.send("Current: " + JSON.parse(resp)["data"]["buy_price"]);
+                session.send("Current Buy Price: SGD" + JSON.parse(resp)["data"]["buy_price"]
+                    + "  \n"
+                    + "Current Sell Price: SGD" + JSON.parse(resp)["data"]["sell_price"]);
             })
                 .catch(function (err) {
                 console.log(err);

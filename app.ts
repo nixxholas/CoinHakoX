@@ -65,7 +65,9 @@ bot.dialog('/', (session: any) => {
                     console.log("Response: " + resp);
                     console.log("Response, variable data: " + resp["data"]);
 
-                    session.send("Current: SGD" + JSON.parse(resp)["data"]["buy_price"]);
+                    session.send("Current Buy Price: SGD" + JSON.parse(resp)["data"]["buy_price"]
+                    + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
+                    + "Current Sell Price: SGD" + JSON.parse(resp)["data"]["sell_price"]);
                 })
                 .catch((err: any) => {
                     console.log(err);
