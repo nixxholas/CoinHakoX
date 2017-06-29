@@ -1,0 +1,13 @@
+{
+  "name": "hakobot",
+  "version": "0.0.1",
+  "main": "app.js",
+  "author": "nixholas",
+  "license": "MIT",
+  "dependencies": {
+    "botbuilder": "^3.8.4",
+    "request": "^2.81.0",
+    "request-promise-native": "^1.0.4",
+    "restify": "^4.3.1"
+  }
+}
