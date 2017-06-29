@@ -84,7 +84,8 @@ bot.dialog('/', function (session) {
             });
             break;
         default:
-            session.send("Sorry I don't get what you're saying!");
+            // Ignore General Replies
+            //session.send("Sorry I don't get what you're saying!");
             break;
     }
 });
