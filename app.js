@@ -48,7 +48,7 @@ bot.dialog('/', function (session) {
     switch (msg) {
         case "/help":
             break;
-        case "/price btc":
+        case "/all":
             request({
                 method: 'GET',
                 url: apiUrl + "all_prices"
@@ -59,37 +59,18 @@ bot.dialog('/', function (session) {
                 //console.log("Response, variable data: " + resp["data"]);
                 //console.log("Response, variable data: " + JSON.parse(resp)["data"]);
                 var data = JSON.parse(resp)["data"];
-                //session.send(data.BTCSGD.buy_price);
-                // Store the items for the card to render
-                var items;
-                for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
-                    var pair = data_1[_i];
-                    console.log(pair.buy_price);
+                // Iterate through the data object
+                for (var datum in data) {
+                    //console.log(datum);
+                    //console.log(data[datum]); // { buy_price: '9097.61', sell_price: '9019.86' }
+                    finalResp += "### " + datum + "  \n  \n";
+                    finalResp += "__Buy Price:" + data[datum].buy_price + "__  \n";
+                    finalResp += "__Sell Price:" + data[datum].sell_price + "__  \n";
+                    finalResp += "  \n\r";
                 }
-                var card = {
-                    'contentType': 'application/vnd.microsoft.card.adaptive',
-                    'content': {
-                        'type': 'AdaptiveCard',
-                        'body': [
-                            {
-                                'type': 'Container',
-                                'items': items
-                            }
-                        ]
-                    }
-                };
-                var msgReply = new builder.Message(session)
-                    .addAttachment(card);
-                //session.send(msgReply);
-                // finalResp += "BTCMYR"
-                //     + "  \n"
-                //     + "Current Buy Price: MYR" + JSON.parse(resp)["data"]["buy_price"]
-                //     + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
-                //     + "Current Sell Price: MYR" + JSON.parse(resp)["data"]["sell_price"];
-                //console.log(finalResp);
-                //session.send(finalResp);
+                session.send(finalResp);
             })["catch"](function (err) {
-                console.log(err);
+                console.log("Error: " + err);
             });
             // request({
             //         method: 'GET',
