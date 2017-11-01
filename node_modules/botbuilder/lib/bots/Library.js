@@ -132,7 +132,7 @@ var Library = (function (_super) {
                 });
             }
             else {
-                ctx.logger.warn(ctx.dialogStack(), "Active dialog '" + entry.id + "' not found in library.");
+                context.logger.warn(context.dialogStack(), "Active dialog '" + entry.id + "' not found in library.");
                 callback(null, results);
             }
         }
@@ -471,13 +471,13 @@ var Library = (function (_super) {
     Library.prototype.logPrefix = function () {
         return 'Library("' + this.name + '")';
     };
+    Library.RouteTypes = {
+        GlobalAction: 'GlobalAction',
+        StackAction: 'StackAction',
+        ActiveDialog: 'ActiveDialog'
+    };
     return Library;
 }(events_1.EventEmitter));
-Library.RouteTypes = {
-    GlobalAction: 'GlobalAction',
-    StackAction: 'StackAction',
-    ActiveDialog: 'ActiveDialog'
-};
 exports.Library = Library;
 exports.systemLib = new Library(consts.Library.system);
 exports.systemLib.localePath(path.join(__dirname, '../locale/'));

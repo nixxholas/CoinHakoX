@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var fs = require('fs');
 var restify = require('restify');
 var builder = require('botbuilder');
@@ -13,7 +13,7 @@ var connector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
-var apiUrl = "https://coinhako.com/api/v1/price/currency/";
+var apiUrl = "https://coinhako.com/api/v1/price/";
 // Listen for messages from users 
 server.post('/api/messages', connector.listen());
 // Create your bot with a function to receive messages from the user
@@ -46,73 +46,117 @@ bot.dialog('/', function (session) {
     var msg = session.message.text;
     var finalResp = "";
     switch (msg) {
+        case "/help":
+            break;
         case "/price btc":
             request({
                 method: 'GET',
-                url: apiUrl + "BTCUSD"
+                url: apiUrl + "all_prices"
             })
                 .then(function (resp) {
                 //session.send("Done!");
                 //console.log("Response: " + resp);
                 //console.log("Response, variable data: " + resp["data"]);
-                finalResp += "BTCUSD"
-                    + "  \n"
-                    + "Current Buy Price: US$" + JSON.parse(resp)["data"]["buy_price"]
-                    + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
-                    + "Current Sell Price: US$" + JSON.parse(resp)["data"]["sell_price"]
-                    + "  \n"
-                    + "  \n";
+                //console.log("Response, variable data: " + JSON.parse(resp)["data"]);
+                var data = JSON.parse(resp)["data"];
+                //session.send(data.BTCSGD.buy_price);
+                // Store the items for the card to render
+                var items;
+                for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
+                    var pair = data_1[_i];
+                    console.log(pair.buy_price);
+                }
+                var card = {
+                    'contentType': 'application/vnd.microsoft.card.adaptive',
+                    'content': {
+                        'type': 'AdaptiveCard',
+                        'body': [
+                            {
+                                'type': 'Container',
+                                'items': items
+                            }
+                        ]
+                    }
+                };
+                var msgReply = new builder.Message(session)
+                    .addAttachment(card);
+                //session.send(msgReply);
+                // finalResp += "BTCMYR"
+                //     + "  \n"
+                //     + "Current Buy Price: MYR" + JSON.parse(resp)["data"]["buy_price"]
+                //     + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
+                //     + "Current Sell Price: MYR" + JSON.parse(resp)["data"]["sell_price"];
                 //console.log(finalResp);
-                // Second request
-                request({
-                    method: 'GET',
-                    url: apiUrl + "BTCSGD"
-                })
-                    .then(function (resp) {
-                    //session.send("Done!");
-                    console.log("Response: " + resp);
-                    console.log("Response, variable data: " + resp["data"]);
-                    finalResp += "BTCSGD"
-                        + "  \n"
-                        + "Current Buy Price: SGD" + JSON.parse(resp)["data"]["buy_price"]
-                        + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
-                        + "Current Sell Price: SGD" + JSON.parse(resp)["data"]["sell_price"]
-                        + "  \n"
-                        + "  \n";
-                    //console.log(finalResp);
-                    // Third request
-                    request({
-                        method: 'GET',
-                        url: apiUrl + "BTCMYR"
-                    })
-                        .then(function (resp) {
-                        //session.send("Done!");
-                        console.log("Response: " + resp);
-                        console.log("Response, variable data: " + resp["data"]);
-                        finalResp += "BTCMYR"
-                            + "  \n"
-                            + "Current Buy Price: MYR" + JSON.parse(resp)["data"]["buy_price"]
-                            + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
-                            + "Current Sell Price: MYR" + JSON.parse(resp)["data"]["sell_price"];
-                        //console.log(finalResp);
-                        session.send(finalResp);
-                    })
-                        .catch(function (err) {
-                        console.log(err);
-                    });
-                })
-                    .catch(function (err) {
-                    console.log(err);
-                });
-            })
-                .catch(function (err) {
+                //session.send(finalResp);
+            })["catch"](function (err) {
                 console.log(err);
             });
+            // request({
+            //         method: 'GET',
+            //         url: apiUrl + "BTCUSD"
+            //     })
+            //     .then((resp: any) => {
+            //         //session.send("Done!");
+            //         //console.log("Response: " + resp);
+            //         //console.log("Response, variable data: " + resp["data"]);
+            //         finalResp += "BTCUSD"
+            //         + "  \n"
+            //         + "Current Buy Price: US$" + JSON.parse(resp)["data"]["buy_price"]
+            //         + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
+            //         + "Current Sell Price: US$" + JSON.parse(resp)["data"]["sell_price"]
+            //         + "  \n" 
+            //         + "  \n";
+            //         //console.log(finalResp);
+            //         // Second request
+            //         request({
+            //                 method: 'GET',
+            //                 url: apiUrl + "BTCSGD"
+            //             })
+            //             .then((resp: any) => {
+            //                 //session.send("Done!");
+            //                 console.log("Response: " + resp);
+            //                 console.log("Response, variable data: " + resp["data"]);
+            //                 finalResp += "BTCSGD"
+            //                 + "  \n"
+            //                 + "Current Buy Price: SGD" + JSON.parse(resp)["data"]["buy_price"]
+            //                 + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
+            //                 + "Current Sell Price: SGD" + JSON.parse(resp)["data"]["sell_price"]
+            //                 + "  \n" 
+            //                 + "  \n";
+            //                 //console.log(finalResp);
+            //                 // Third request
+            //                 request({
+            //                         method: 'GET',
+            //                         url: apiUrl + "BTCMYR"
+            //                     })
+            //                     .then((resp: any) => {
+            //                         //session.send("Done!");
+            //                         console.log("Response: " + resp);
+            //                         console.log("Response, variable data: " + resp["data"]);
+            //                         finalResp += "BTCMYR"
+            //                         + "  \n"
+            //                         + "Current Buy Price: MYR" + JSON.parse(resp)["data"]["buy_price"]
+            //                         + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
+            //                         + "Current Sell Price: MYR" + JSON.parse(resp)["data"]["sell_price"];
+            //                         //console.log(finalResp);
+            //                         session.send(finalResp);
+            //                     })
+            //                     .catch((err: any) => {
+            //                         console.log(err);
+            //                     });
+            //             })
+            //             .catch((err: any) => {
+            //                 console.log(err);
+            //             });
+            //     })
+            //     .catch((err: any) => {
+            //         console.log(err);
+            //     });
             break;
         case "/price eth":
             request({
                 method: 'GET',
-                url: apiUrl + "ETHUSD"
+                url: apiUrl + "currency/ETHUSD"
             })
                 .then(function (resp) {
                 //session.send("Done!");
@@ -127,7 +171,7 @@ bot.dialog('/', function (session) {
                     + "  \n";
                 request({
                     method: 'GET',
-                    url: apiUrl + "ETHSGD"
+                    url: apiUrl + "currency/ETHSGD"
                 })
                     .then(function (resp) {
                     //session.send("Done!");
@@ -142,7 +186,7 @@ bot.dialog('/', function (session) {
                         + "  \n";
                     request({
                         method: 'GET',
-                        url: apiUrl + "ETHMYR"
+                        url: apiUrl + "currency/ETHMYR"
                     })
                         .then(function (resp) {
                         //session.send("Done!");
@@ -154,16 +198,13 @@ bot.dialog('/', function (session) {
                             + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
                             + "Current Sell Price: MYR" + JSON.parse(resp)["data"]["sell_price"];
                         session.send(finalResp);
-                    })
-                        .catch(function (err) {
+                    })["catch"](function (err) {
                         console.log(err);
                     });
-                })
-                    .catch(function (err) {
+                })["catch"](function (err) {
                     console.log(err);
                 });
-            })
-                .catch(function (err) {
+            })["catch"](function (err) {
                 console.log(err);
             });
             break;

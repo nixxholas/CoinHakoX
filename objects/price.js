@@ -1,6 +1,6 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var Price = (function () {
+exports.__esModule = true;
+var Price = /** @class */ (function () {
     function Price(_buyPrice, _sellPrice) {
         this.buyPrice = _buyPrice;
         this.sellPrice = _sellPrice;

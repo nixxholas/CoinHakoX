@@ -1,6 +1,6 @@
 {
   "name": "hakobot",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "app.ts",
   "author": "nixholas",
   "license": "MIT",
@@ -9,10 +9,14 @@
     "commonjs": "^0.0.1",
     "dtrace-provider": "^0.8.3",
     "express": "^4.15.3",
+    "microsoft-adaptivecards": "^0.6.1",
     "request": "^2.81.0",
     "request-promise-native": "^1.0.4",
     "restify": "^4.3.1",
     "typescript": "^2.4.1",
     "typings": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^8.0.47"
   }
 }
