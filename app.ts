@@ -4,10 +4,25 @@ import { Price } from './objects/price';
 const restify = require('restify');
 const builder = require('botbuilder');
 const request = require('request-promise-native');
+const WebSocket = require('ws');
+const ws = new WebSocket('wss://www.bitmex.com/realtime');
+//const wsOKC = new WebSocket('wss://real.okcoin.com:10440/websocket');
 
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log("Server is up!");
+});
+
+ws.on('open', function open() {
+    ws.send('{"op": "subscribe", "args": ["liquidation"]}');
+
+    setTimeout(function() {
+        ws.ping('', false, true)
+    }, 1000);
+});
+
+ws.on('message', function incoming(data: any) {
+    console.log("ws data: " + data);
 });
 
 // Create the chat connector for communicating with the Bot Framework Service
@@ -21,43 +36,19 @@ var apiUrl = "https://coinhako.com/api/v1/price/";
 // Listen for messages from users 
 server.post('/api/messages', connector.listen());
 
-// Create your bot with a function to receive messages from the user
-// var bot = new builder.UniversalBot(connector, function (session) {
-//     // echo the user's message
-//     //session.send("You said: %s", session.message.text);
-//     var msg = session.message.text;
-
-//     switch(msg) {
-//         case "/price btc":
-//                 request({
-//                     method: 'GET',
-//                     url: apiUrl + "BTCSGD"
-//                 })
-//                 .then((resp) => {
-//                     //session.send("Done!");
-//                     //console.log(resp);
-
-//                     //session
-//                 })
-//                 .catch((err) => {
-//                     console.log(err);
-//                 });
-//             break;
-//         default:
-//             break;
-//     }
-// });
-
 var bot = new builder.UniversalBot(connector);
 
 bot.dialog('/', (session: any) => {
     //console.log(session.message.text);
     var msg = session.message.text;
     let finalResp: string = "";
-    
 
     switch (msg) {
         case "/help":
+            finalResp += "Hi, I am YushoBot. I can provide you information about Coinhako's prices live. \n\n"
+            finalResp += "__/help__ Ask for help? \n\n";
+            finalResp += "__/all__ Retrieve all the prices from Coinhako \n\n";
+            finalResp += "__/price eth__ Retrieve ETH prices from Coinhako \n\n";
             break;
         case "/all":
             request({
@@ -76,7 +67,7 @@ bot.dialog('/', (session: any) => {
                     for (let datum in data) {
                         //console.log(datum);
                         //console.log(data[datum]); // { buy_price: '9097.61', sell_price: '9019.86' }
-                        
+
                         finalResp += "**" + datum + "**  \n\n \n\n";
                         finalResp += "Buy Price: __" + data[datum].buy_price + "__  \n";
                         finalResp += "Sell Price: __" + data[datum].sell_price + "__  \n";
@@ -84,85 +75,15 @@ bot.dialog('/', (session: any) => {
                     }
 
                     var customMessage = new builder.Message(session)
-                                        .text(finalResp)
-                                        .textFormat("markdown")
-                                        .textLocale("en-us");
+                        .text(finalResp)
+                        .textFormat("markdown")
+                        .textLocale("en-us");
 
                     session.send(finalResp);
                 })
                 .catch((err: any) => {
                     console.log("Error: " + err);
                 });
-            // request({
-            //         method: 'GET',
-            //         url: apiUrl + "BTCUSD"
-            //     })
-            //     .then((resp: any) => {
-            //         //session.send("Done!");
-            //         //console.log("Response: " + resp);
-            //         //console.log("Response, variable data: " + resp["data"]);
-
-            //         finalResp += "BTCUSD"
-            //         + "  \n"
-            //         + "Current Buy Price: US$" + JSON.parse(resp)["data"]["buy_price"]
-            //         + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
-            //         + "Current Sell Price: US$" + JSON.parse(resp)["data"]["sell_price"]
-            //         + "  \n" 
-            //         + "  \n";
-
-            //         //console.log(finalResp);
-
-            //         // Second request
-            //         request({
-            //                 method: 'GET',
-            //                 url: apiUrl + "BTCSGD"
-            //             })
-            //             .then((resp: any) => {
-            //                 //session.send("Done!");
-            //                 console.log("Response: " + resp);
-            //                 console.log("Response, variable data: " + resp["data"]);
-
-            //                 finalResp += "BTCSGD"
-            //                 + "  \n"
-            //                 + "Current Buy Price: SGD" + JSON.parse(resp)["data"]["buy_price"]
-            //                 + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
-            //                 + "Current Sell Price: SGD" + JSON.parse(resp)["data"]["sell_price"]
-            //                 + "  \n" 
-            //                 + "  \n";
-
-            //                 //console.log(finalResp);
-
-            //                 // Third request
-            //                 request({
-            //                         method: 'GET',
-            //                         url: apiUrl + "BTCMYR"
-            //                     })
-            //                     .then((resp: any) => {
-            //                         //session.send("Done!");
-            //                         console.log("Response: " + resp);
-            //                         console.log("Response, variable data: " + resp["data"]);
-
-            //                         finalResp += "BTCMYR"
-            //                         + "  \n"
-            //                         + "Current Buy Price: MYR" + JSON.parse(resp)["data"]["buy_price"]
-            //                         + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
-            //                         + "Current Sell Price: MYR" + JSON.parse(resp)["data"]["sell_price"];
-
-            //                         //console.log(finalResp);
-
-            //                         session.send(finalResp);
-            //                     })
-            //                     .catch((err: any) => {
-            //                         console.log(err);
-            //                     });
-            //             })
-            //             .catch((err: any) => {
-            //                 console.log(err);
-            //             });
-            //     })
-            //     .catch((err: any) => {
-            //         console.log(err);
-            //     });
             break;
         case "/price eth":
             request({
