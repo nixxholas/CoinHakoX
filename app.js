@@ -63,11 +63,15 @@ bot.dialog('/', function (session) {
                 for (var datum in data) {
                     //console.log(datum);
                     //console.log(data[datum]); // { buy_price: '9097.61', sell_price: '9019.86' }
-                    finalResp += "### " + datum + "  \n  \n";
-                    finalResp += "__Buy Price:" + data[datum].buy_price + "__  \n";
-                    finalResp += "__Sell Price:" + data[datum].sell_price + "__  \n";
-                    finalResp += "  \n\r";
+                    finalResp += "**" + datum + "**  \n\n \n\n";
+                    finalResp += "Buy Price: __" + data[datum].buy_price + "__  \n";
+                    finalResp += "Sell Price: __" + data[datum].sell_price + "__  \n";
+                    finalResp += "  \n\n";
                 }
+                var customMessage = new builder.Message(session)
+                    .text(finalResp)
+                    .textFormat("markdown")
+                    .textLocale("en-us");
                 session.send(finalResp);
             })["catch"](function (err) {
                 console.log("Error: " + err);
