@@ -36,9 +36,12 @@ bot.dialog('/', function (session) {
     switch (msg) {
         case "/help":
             finalResp += "Hi, I am YushoBot. I can provide you information about Coinhako's prices live. \n\n";
-            finalResp += "__/help__ Ask for help? \n\n";
-            finalResp += "__/all__ Retrieve all the prices from Coinhako \n\n";
-            finalResp += "__/price eth__ Retrieve ETH prices from Coinhako \n\n";
+            finalResp += "  \n\n";
+            finalResp += "> __/help__ Ask for help? \n\n";
+            finalResp += "> __/all__ Retrieve all the prices from Coinhako \n\n";
+            finalResp += "> __/price eth__ Retrieve ETH prices from Coinhako \n\n";
+            // Dispatch the reply
+            session.send(finalResp);
             break;
         case "/all":
             request({
@@ -56,8 +59,8 @@ bot.dialog('/', function (session) {
                     //console.log(datum);
                     //console.log(data[datum]); // { buy_price: '9097.61', sell_price: '9019.86' }
                     finalResp += "**" + datum + "**  \n\n \n\n";
-                    finalResp += "Buy Price: __" + data[datum].buy_price + "__  \n";
-                    finalResp += "Sell Price: __" + data[datum].sell_price + "__  \n";
+                    finalResp += "- Buy Price: __" + data[datum].buy_price + "__  \n";
+                    finalResp += "- Sell Price: __" + data[datum].sell_price + "__  \n";
                     finalResp += "  \n\n";
                 }
                 var customMessage = new builder.Message(session)
