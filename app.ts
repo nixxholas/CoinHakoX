@@ -1,4 +1,5 @@
 const fs = require('fs');
+const f = require('util').format;
 import { Price } from './objects/price';
 import { User } from './objects/user';
 
@@ -20,10 +21,11 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 
 // https://docs.mongodb.com/getting-started/node/insert/
 // https://medium.com/ibm-watson-data-lab/environment-variables-or-keeping-your-secrets-secret-in-a-node-js-app-99019dfff716
-MongoClient.connect(process.env.dbURL, function(err: any, db: any) {
-  assert.equal(null, err);
-  console.log("Connected correctly to database server.");
-  db.close();
+let MongoDb = MongoClient.connect('mongodb://' + process.env.dbUser + ':' + process.env.dbPass + '@' + process.env.dbURL, function(err: any, db: any) {
+    assert.equal(null, err);
+    console.log("Connected correctly to database server.");
+
+    return db;
 });
 
 ws.on('open', function open() {
@@ -103,74 +105,27 @@ bot.dialog('/', (session: any) => {
                     console.log("Error: " + err);
                 });
             break;
-        case "/price eth":
-            request({
-                method: 'GET',
-                url: apiUrl + "currency/ETHUSD"
-            })
-                .then((resp: any) => {
-                    //session.send("Done!");
-                    console.log("Response: " + resp);
-                    console.log("Response, variable data: " + resp["data"]);
+        case "/subrekts":
+            session.send("Hang on, let me sub you...");
 
-                    finalResp += "ETHUSD"
-                        + "  \n"
-                        + "Current Buy Price: US$" + JSON.parse(resp)["data"]["buy_price"]
-                        + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
-                        + "Current Sell Price: US$" + JSON.parse(resp)["data"]["sell_price"]
-                        + "  \n"
-                        + "  \n";
+            // Retrieve the user's id
+            let uid = session.message.address.user.id; // found you here => https://docs.microsoft.com/en-us/bot-framework/nodejs/bot-builder-nodejs-request-payment
 
-                    request({
-                        method: 'GET',
-                        url: apiUrl + "currency/ETHSGD"
-                    })
-                        .then((resp: any) => {
-                            //session.send("Done!");
-                            console.log("Response: " + resp);
-                            console.log("Response, variable data: " + resp["data"]);
-
-                            finalResp += "ETHSGD"
-                                + "  \n"
-                                + "Current Buy Price: SGD" + JSON.parse(resp)["data"]["buy_price"]
-                                + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
-                                + "Current Sell Price: SGD" + JSON.parse(resp)["data"]["sell_price"]
-                                + "  \n"
-                                + "  \n";
-
-                            request({
-                                method: 'GET',
-                                url: apiUrl + "currency/ETHMYR"
-                            })
-                                .then((resp: any) => {
-                                    //session.send("Done!");
-                                    console.log("Response: " + resp);
-                                    console.log("Response, variable data: " + resp["data"]);
-
-                                    finalResp += "ETHMYR"
-                                        + "  \n"
-                                        + "Current Buy Price: MYR" + JSON.parse(resp)["data"]["buy_price"]
-                                        + "  \n" // https://github.com/Microsoft/BotBuilder/issues/1112
-                                        + "Current Sell Price: MYR" + JSON.parse(resp)["data"]["sell_price"];
-
-                                    session.send(finalResp);
-                                })
-                                .catch((err: any) => {
-                                    console.log(err);
-                                });
-                        })
-                        .catch((err: any) => {
-                            console.log(err);
-                        });
-                })
-                .catch((err: any) => {
-                    console.log(err);
+            if (!uid) {
+                session.send("I'm unable to subscribe you =(");
+                break;
+            } else {
+                let user = new User(uid);
+                MongoClient.collection("liquidsubs").insertOne(user, function(err: any, res: any) {
+                  if (err) session.send("An error has occured, ask nic to fix it: " + err);
+                  console.log("1 document inserted");
                 });
+            }
             break;
-        case "/username":
-            session.send(session.message.user.name);
-        case "/uid":
-            session.send(session.message.address.user.id);
+        // case "/username":
+        //     session.send(session.message.user.name);
+        // case "/uid":
+        //     session.send(session.message.address.user.id);
         default:
             // Ignore General Replies   
             //session.send("Sorry I don't get what you're saying!");
