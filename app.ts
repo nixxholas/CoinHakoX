@@ -1,5 +1,6 @@
 const fs = require('fs');
 import { Price } from './objects/price';
+import { User } from './objects/user';
 
 const restify = require('restify');
 const builder = require('botbuilder');
@@ -8,17 +9,25 @@ const WebSocket = require('ws');
 const ws = new WebSocket('wss://www.bitmex.com/realtime');
 //const wsOKC = new WebSocket('wss://real.okcoin.com:10440/websocket');
 
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
+
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log("Server is up!");
 });
 
-ws.on('open', function open() {
-    ws.send('{"op": "subscribe", "args": ["liquidation"]}');
+// https://docs.mongodb.com/getting-started/node/insert/
+// https://medium.com/ibm-watson-data-lab/environment-variables-or-keeping-your-secrets-secret-in-a-node-js-app-99019dfff716
+MongoClient.connect(process.env.dbURL, function(err: any, db: any) {
+  assert.equal(null, err);
+  console.log("Connected correctly to database server.");
+  db.close();
+});
 
-    setTimeout(function() {
-        ws.ping('', false, true)
-    }, 1000);
+ws.on('open', function open() {
+    console.log("Sending subscription packet for liquidation");
+    ws.send('{"op": "subscribe", "args": ["liquidation"]}');
 });
 
 ws.on('message', function incoming(data: any) {
@@ -40,6 +49,10 @@ var bot = new builder.UniversalBot(connector);
 
 bot.dialog('/', (session: any) => {
     //console.log(session.message.text);
+    
+    // Text formatting
+    // https://docs.microsoft.com/en-us/bot-framework/portal-channel-inspector#text-formatting
+
     var msg = session.message.text;
     let finalResp: string = "";
 
@@ -153,6 +166,8 @@ bot.dialog('/', (session: any) => {
                     console.log(err);
                 });
             break;
+        case "/username":
+            session.send(session.message.user.name);
         default:
             // Ignore General Replies   
             //session.send("Sorry I don't get what you're saying!");

@@ -5,11 +5,13 @@
   "author": "nixholas",
   "license": "MIT",
   "dependencies": {
+    "assert": "^1.4.1",
     "botbuilder": "^3.8.4",
     "commonjs": "^0.0.1",
     "dtrace-provider": "^0.8.3",
     "express": "^4.15.3",
     "microsoft-adaptivecards": "^0.6.1",
+    "mongodb": "^2.2.33",
     "request": "^2.81.0",
     "request-promise-native": "^1.0.4",
     "restify": "^4.3.1",
