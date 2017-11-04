@@ -8,6 +8,7 @@ var WebSocket = require('ws');
 var ws = new WebSocket('wss://www.bitmex.com/realtime');
 //const wsOKC = new WebSocket('wss://real.okcoin.com:10440/websocket');
 var MongoClient = require('mongodb').MongoClient;
+var MongoObjectId = require('mongodb').ObjectID;
 var assert = require('assert');
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
@@ -138,6 +139,8 @@ bot.dialog('/', function (session) {
             break;
         case "/username":
             session.send(session.message.user.name);
+        case "/uid":
+            session.send(session.message.address.user.id);
         default:
             // Ignore General Replies   
             //session.send("Sorry I don't get what you're saying!");

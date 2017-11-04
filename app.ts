@@ -10,6 +10,7 @@ const ws = new WebSocket('wss://www.bitmex.com/realtime');
 //const wsOKC = new WebSocket('wss://real.okcoin.com:10440/websocket');
 
 const MongoClient = require('mongodb').MongoClient;
+const MongoObjectId = require('mongodb').ObjectID;
 const assert = require('assert');
 
 const server = restify.createServer();
@@ -168,6 +169,8 @@ bot.dialog('/', (session: any) => {
             break;
         case "/username":
             session.send(session.message.user.name);
+        case "/uid":
+            session.send(session.message.address.user.id);
         default:
             // Ignore General Replies   
             //session.send("Sorry I don't get what you're saying!");
