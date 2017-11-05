@@ -88,6 +88,8 @@ bot.dialog('/', function (session) {
         case "/subrekts":
             session.send("Hang on, let me sub you...");
             // Retrieve the user's id
+            // https://docs.microsoft.com/en-us/bot-framework/resources-identifiers-guide
+            // https://docs.microsoft.com/en-us/bot-framework/nodejs/bot-builder-nodejs-state
             var uid = session.message.address.user.id; // found you here => https://docs.microsoft.com/en-us/bot-framework/nodejs/bot-builder-nodejs-request-payment
             var username = session.message.user.name;
             if (!uid) {
@@ -97,11 +99,13 @@ bot.dialog('/', function (session) {
             else {
                 var user_2 = new user_1.User(uid, username);
                 var collection_1 = mongoDb.collection("liquidsubs");
+                // Perform database exists checks
+                // https://stackoverflow.com/questions/29355134/mongodb-check-to-see-if-values-existnode-js
                 collection_1.find({ _id: uid, _username: username }, { $exists: true }).toArray(function (err, doc) {
-                    if (doc) {
+                    if (doc && doc.length > 0) {
                         session.send("You're already subscribed.");
                     }
-                    else if (!doc) {
+                    else if (!doc || doc.length == 0) {
                         // Add this user to the subscription
                         collection_1.insertOne(user_2, function (err, res) {
                             if (err)
