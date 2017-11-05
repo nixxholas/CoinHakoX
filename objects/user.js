@@ -2,11 +2,12 @@
 exports.__esModule = true;
 var User = /** @class */ (function () {
     // Just the id for now
-    function User(_id) {
-        this.id = _id;
+    function User(_uid, _uusername) {
+        this._id = _uid;
+        this._username = _uusername;
     }
     User.prototype.print = function () {
-        return this.id;
+        return this._id + ", " + this._username;
     };
     return User;
 }());

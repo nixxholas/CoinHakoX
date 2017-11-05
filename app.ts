@@ -19,13 +19,14 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log("Server is up!");
 });
 
+var mongoDb: any;
 // https://docs.mongodb.com/getting-started/node/insert/
 // https://medium.com/ibm-watson-data-lab/environment-variables-or-keeping-your-secrets-secret-in-a-node-js-app-99019dfff716
-let MongoDb = MongoClient.connect('mongodb://' + process.env.dbUser + ':' + process.env.dbPass + '@' + process.env.dbURL, function(err: any, db: any) {
+MongoClient.connect('mongodb://' + process.env.dbUser + ':' + process.env.dbPass + '@' + process.env.dbURL, function(err: any, db: any) {
     assert.equal(null, err);
     console.log("Connected correctly to database server.");
 
-    return db;
+    mongoDb = db;
 });
 
 ws.on('open', function open() {
@@ -110,15 +111,30 @@ bot.dialog('/', (session: any) => {
 
             // Retrieve the user's id
             let uid = session.message.address.user.id; // found you here => https://docs.microsoft.com/en-us/bot-framework/nodejs/bot-builder-nodejs-request-payment
+            let username = session.message.user.name;
 
             if (!uid) {
                 session.send("I'm unable to subscribe you =(");
                 break;
             } else {
-                let user = new User(uid);
-                MongoClient.collection("liquidsubs").insertOne(user, function(err: any, res: any) {
-                  if (err) session.send("An error has occured, ask nic to fix it: " + err);
-                  console.log("1 document inserted");
+                let user = new User(uid, username);
+                let collection = mongoDb.collection("liquidsubs");
+
+                collection.find({ _id: uid, _username: username}, {$exists: true}).toArray(function(err: any, doc: any) //find if a value exists
+                {     
+                    if (doc) //if it does
+                    {
+                        session.send("You're already subscribed.");
+                    }
+                    else if (!doc) // if it does not 
+                    {
+                        // Add this user to the subscription
+                        collection.insertOne(user, function(err: any, res: any) {
+                          if (err) session.send("An error has occured, ask nic to fix it: " + err);
+                          //console.log("1 document inserted");
+                          session.send("All done!");
+                        });
+                    }
                 });
             }
             break;
